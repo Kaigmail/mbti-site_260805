@@ -1,0 +1,22 @@
+{
+  "name": "mbti-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Hiking & strolling personality test backend (Express + scoring + matching + database)",
+  "type": "commonjs",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "better-sqlite3": "^11.7.0"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "UNLICENSED",
+  "allowScripts": {
+    "better-sqlite3@11.10.0": true
+  }
+}
