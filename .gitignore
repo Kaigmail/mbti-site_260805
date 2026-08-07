@@ -3,3 +3,4 @@ data/results.db
 *.log
 
 .codex_monitor.json
+.env

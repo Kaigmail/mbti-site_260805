@@ -30,3 +30,10 @@
 - Codex:任务卡#3 完成,curl 自验 6 项全过(未用浏览器,按提醒)
 - Hermes 独立验收:首页/测试页/结果页与设计稿逐项对比一致;分享标签虚线确认(实为 dashed,borderStyle 验证);返回修改链路 OK(A 高亮→改选B覆盖);重新测试跳转 OK;移动端 @media 360/480 齐备;server/data/docs 零改动确认
 - 结果:TURBO 全流程(全A)✅,截图确认适合分享
+
+## 2026-08-05 V2 Supabase 接入完成
+- Kai:注册 Supabase + 执行建表 SQL + 放行策略 SQL
+- Hermes:db.js 加 supabase 分支(保存全字段/统计);/api/save 扩展;/api/stats 新增;test.js 答案存 sessionStorage;result.js 先渲染后异步保存+toast(成功/失败文案);style.css 加 toast;SQL 脚本 docs/
+- Codex:任务卡#4 统计页(stats.html+stats.js+首页入口+CSS条形图),自测 20 断言全过
+- 踩坑:新版 Supabase 强制 RLS 不允许 disable,需建 anon 策略;node 后台启动需 pty=true(非pty静默exit1)
+- 验证:保存入库(id=2)/stats total=2/浏览器全流程 toast"测试结果已保存"/统计页渲染 100%

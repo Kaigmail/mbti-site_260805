@@ -469,6 +469,186 @@ img {
   margin-top: 18px;
 }
 
+/* ---------- 数据统计页 ---------- */
+.stats-head {
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+.stats-title {
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+.stats-sub {
+  margin-top: 6px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.stats-body .state-box {
+  margin-top: 18px;
+}
+
+.stats-total {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 26px 18px 22px;
+  background: var(--card);
+  border: 2px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.stats-total .num {
+  font-size: 54px;
+  font-weight: 900;
+  line-height: 1;
+  color: var(--green);
+}
+
+.stats-total .label {
+  font-size: 13px;
+  color: var(--muted);
+  letter-spacing: 3px;
+  text-indent: 3px;
+}
+
+.stats-section {
+  margin-top: 18px;
+  padding: 18px 16px;
+  background: var(--card);
+  border: 2px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.stats-section h2 {
+  margin-bottom: 12px;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: var(--green);
+}
+
+.stat-list {
+  list-style: none;
+}
+
+.stat-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px dashed var(--line-soft);
+}
+
+.stat-row:last-child {
+  border-bottom: none;
+}
+
+.stat-row .name {
+  flex: 1;
+  min-width: 0;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #2c4a39;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stat-row .count {
+  font-size: 13px;
+  color: var(--muted-light);
+  white-space: nowrap;
+}
+
+.stat-row .percent {
+  width: 58px;
+  text-align: right;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--orange-dark);
+  white-space: nowrap;
+}
+
+.chart-list {
+  list-style: none;
+}
+
+.chart-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+}
+
+.chart-row .name {
+  flex: none;
+  width: 80px;
+  font-size: 12.5px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chart-track {
+  flex: 1;
+  min-width: 0;
+  height: 14px;
+  background: var(--line);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.chart-bar {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #2d8a4e, #ff8c42);
+}
+
+.chart-row .percent {
+  flex: none;
+  width: 46px;
+  text-align: right;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--green);
+  white-space: nowrap;
+}
+
+.stats-back {
+  display: block;
+  margin-top: 22px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted-light);
+}
+
+.stats-back:active {
+  opacity: 0.7;
+}
+
+/* 首页底部:数据统计入口(小字、灰绿,不抢主按钮) */
+.stats-entry {
+  display: block;
+  margin-top: 20px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted-light);
+}
+
+.stats-entry:active {
+  opacity: 0.7;
+}
+
 /* ---------- 桌面端:居中卡片,背景更宽敞 ---------- */
 @media (min-width: 480px) {
   .page {
@@ -496,3 +676,32 @@ img {
     display: none;
   }
 }
+
+@media (max-width: 375px) {
+  .stats-total .num {
+    font-size: 46px;
+  }
+
+  .chart-row {
+    gap: 8px;
+  }
+
+  .chart-row .name {
+    width: 64px;
+  }
+
+  .chart-row .percent {
+    width: 42px;
+  }
+}
+
+/* 保存结果轻提示 toast */
+.save-toast {
+  position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%) translateY(20px);
+  background: #2d8a4e; color: #fff; font-size: 14px; font-weight: 700;
+  padding: 10px 20px; border-radius: 999px; box-shadow: 0 4px 14px rgba(0,0,0,.18);
+  opacity: 0; pointer-events: none; transition: opacity .25s ease, transform .25s ease;
+  z-index: 999; max-width: 86vw; text-align: center;
+}
+.save-toast.toast-show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.save-toast.toast-fail { background: #d96b1f; }

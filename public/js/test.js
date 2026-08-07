@@ -132,18 +132,8 @@ async function submitAnswers() {
       throw new Error(`HTTP ${resultRes.status}`);
     }
     const result = await resultRes.json();
-    try {
-      await fetch('/api/save', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          code: result.code,
-          scores: result.dimension_scores || {},
-        }),
-      });
-    } catch (saveErr) {
-      console.warn('Failed to save result:', saveErr);
-    }
+    // 答案存档,结果页渲染后再异步保存(不阻塞用户看报告)
+    sessionStorage.setItem('mbti_answers', JSON.stringify(answers));
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(result));
     window.location.href = '/result.html';
   } catch (err) {

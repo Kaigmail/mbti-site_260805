@@ -1,6 +1,64 @@
 'use strict';
 const STORAGE_KEY = 'mbti_result';
+const ANSWERS_KEY = 'mbti_answers';
 const page = document.getElementById('page');
+
+function showToast(message, type) {
+  let toast = document.querySelector('.save-toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.className = 'save-toast';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = message;
+  toast.classList.toggle('toast-ok', type === 'ok');
+  toast.classList.toggle('toast-fail', type === 'fail');
+  toast.classList.add('toast-show');
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => toast.classList.remove('toast-show'), 3200);
+}
+
+/**
+ * 渲染结果页后异步保存记录:先展示报告,保存不阻塞用户。
+ * 成功 → 轻提示"测试结果已保存"
+ * 失败 → 提示"结果展示成功,但保存记录失败,请稍后再试",报告保留
+ */
+function saveResultAsync(result) {
+  let answers = null;
+  try {
+    const raw = sessionStorage.getItem(ANSWERS_KEY);
+    if (raw) answers = JSON.parse(raw);
+  } catch (err) {
+    answers = null;
+  }
+  fetch('/api/save', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      code: result.code,
+      name: result.name,
+      short_title: result.short_title,
+      keywords: result.keywords,
+      dimension_scores: result.dimension_scores,
+      answers,
+    }),
+  })
+    .then((res) => {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    })
+    .then((data) => {
+      if (data && data.ok) {
+        showToast('测试结果已保存', 'ok');
+      } else {
+        showToast('结果展示成功,但保存记录失败,请稍后再试', 'fail');
+      }
+    })
+    .catch(() => {
+      showToast('结果展示成功,但保存记录失败,请稍后再试', 'fail');
+    });
+}
+
 function redirectHome() {
   window.location.replace('/index.html');
 }
@@ -93,5 +151,6 @@ function init() {
     return;
   }
   renderResult(result);
+  saveResultAsync(result);
 }
 init();

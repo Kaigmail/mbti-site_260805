@@ -1,12 +1,14 @@
 'use strict';
 
+require('dotenv').config();
+
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
 
 const { score } = require('./scoring');
 const { match } = require('./matching');
-const { initDB, saveResult } = require('./db');
+const { initDB, saveResult, getStats } = require('./db');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -50,20 +52,35 @@ app.post('/api/result', (req, res) => {
   }
 });
 
-app.post('/api/save', (req, res) => {
-  const { code, scores } = req.body || {};
+app.post('/api/save', async (req, res) => {
+  const { code, name, short_title, keywords, dimension_scores, answers } = req.body || {};
   if (typeof code !== 'string' || code.length === 0) {
     return res.status(400).json({ ok: false, error: 'code is required' });
   }
-  if (!scores || typeof scores !== 'object' || Array.isArray(scores)) {
-    return res.status(400).json({ ok: false, error: 'scores must be an object' });
-  }
 
   try {
-    const id = saveResult({ code, scores });
+    const id = await saveResult({
+      code,
+      name,
+      short_title,
+      keywords,
+      dimension_scores,
+      answers,
+    });
     res.json({ ok: true, id });
   } catch (err) {
+    console.error('save failed:', err);
     res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+app.get('/api/stats', async (req, res) => {
+  try {
+    const stats = await getStats();
+    res.json(stats);
+  } catch (err) {
+    console.error('stats failed:', err);
+    res.status(500).json({ error: err.message });
   }
 });
 
