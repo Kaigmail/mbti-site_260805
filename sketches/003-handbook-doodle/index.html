@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>变体 3 · 手账涂鸦风 — 徒步&溜达风格测试</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #fdf6e3; color: #4a3b2a; line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .tag {
+    position: fixed; top: 10px; left: 50%; transform: translateX(-50%) rotate(-1deg);
+    background: #ffb26b; color: #5a3d1c; font-size: 12px; font-weight: 700;
+    padding: 4px 16px; border-radius: 999px; z-index: 99; border: 2px dashed #fff;
+  }
+  .screen { display: none; max-width: 420px; margin: 0 auto; padding: 60px 20px 44px; }
+  .screen.active { display: block; }
+
+  .sticker {
+    display: inline-block; background: #fff; border: 2px dashed #d9c8a8;
+    border-radius: 14px; padding: 3px 12px; font-size: 12px; font-weight: 700;
+    transform: rotate(-2deg); color: #8a6d4b;
+  }
+
+  /* 首页 */
+  .hero { text-align: center; }
+  .hero .sticker { margin-bottom: 16px; transform: rotate(2deg); }
+  .hero h1 {
+    font-size: 32px; font-weight: 900; line-height: 1.3;
+    display: inline-block; padding: 0 18px 6px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='14'%3E%3Cpath d='M2 8 Q 75 2 150 7 T 298 6' stroke='%23ffb26b' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") bottom center / 100% 10px no-repeat;
+  }
+  .hero .sub { margin-top: 14px; font-size: 15px; color: #8a7a5f; }
+  .hero .desc {
+    margin: 24px 0; background: #fffdf7; border: 2px solid #efe3c8; border-radius: 18px;
+    padding: 16px 18px; font-size: 14px; color: #7a674b; position: relative;
+  }
+  .hero .desc::before { content: "📌"; position: absolute; top: -12px; left: 20px; font-size: 20px; }
+  .btn {
+    display: block; width: 100%; padding: 15px 0; border: none; cursor: pointer;
+    background: #7bc47f; color: #fff; font-size: 18px; font-weight: 800;
+    border-radius: 16px; letter-spacing: 4px; text-indent: 4px; font-family: inherit;
+    box-shadow: 3px 4px 0 #5a9a5e; transform: rotate(-0.5deg);
+    transition: transform .1s ease, box-shadow .1s ease;
+  }
+  .btn:active { transform: translate(2px, 3px) rotate(0); box-shadow: 1px 1px 0 #5a9a5e; }
+  .btn.peach { background: #ffb26b; box-shadow: 3px 4px 0 #d98a45; letter-spacing: 2px; text-indent: 0; }
+  .foot { text-align: center; color: #b5a583; font-size: 12px; margin-top: 20px; }
+
+  /* 测试页 */
+  .quiz-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .quiz-head .num { font-size: 18px; font-weight: 900; color: #5a9a5e; }
+  .quiz-head .num b { font-size: 28px; }
+  .track { height: 14px; background: #efe3c8; border-radius: 999px; overflow: hidden; border: 2px solid #e2d3ae; margin-bottom: 20px; }
+  .track i { display: block; height: 100%; width: 5%; background: repeating-linear-gradient(45deg, #7bc47f 0 8px, #5a9a5e 8px 16px); border-radius: 999px; }
+  .q-card { background: #fffdf7; border: 2px solid #efe3c8; border-radius: 20px; padding: 24px 20px; position: relative; }
+  .q-card::after { content: "✎"; position: absolute; top: 10px; right: 14px; color: #e2d3ae; font-size: 18px; }
+  .q-card .q { font-size: 19px; font-weight: 800; line-height: 1.55; }
+  .opt {
+    display: block; width: 100%; margin-top: 13px; padding: 13px 14px; text-align: left;
+    background: #fff; border: 2px solid #efe3c8; border-radius: 14px; cursor: pointer;
+    font-size: 14.5px; color: #5d4c33; font-family: inherit; transition: all .15s ease;
+  }
+  .opt .k {
+    display: inline-flex; width: 26px; height: 26px; align-items: center; justify-content: center;
+    background: #ffd9a8; color: #8a5a1c; border-radius: 8px; font-size: 13px; font-weight: 800; margin-right: 10px;
+    transform: rotate(-3deg);
+  }
+  .opt:active, .opt.picked { border-color: #7bc47f; background: #f2faf0; transform: rotate(-0.5deg); }
+  .opt.picked .k { background: #7bc47f; color: #fff; }
+  .back { margin-top: 16px; background: none; border: none; color: #b5a583; font-size: 13px; cursor: pointer; width: 100%; text-align: center; text-decoration: underline wavy #d9c8a8; }
+
+  /* 结果页 */
+  .result-hero { text-align: center; }
+  .result-hero .avatar {
+    width: 100px; height: 134px; object-fit: cover; border-radius: 18px;
+    border: 3px solid #fff; box-shadow: 4px 5px 0 #e2d3ae; transform: rotate(1.5deg); margin-bottom: 16px;
+  }
+  .result-hero .code { display: inline-block; font-size: 34px; font-weight: 900; letter-spacing: 2px; color: #5a9a5e; background: #fff; border: 2px dashed #bcd9b8; padding: 4px 18px; border-radius: 12px; transform: rotate(-1deg); }
+  .result-hero .name { font-size: 24px; font-weight: 900; margin-top: 10px; }
+  .result-hero .share { display: inline-block; margin-top: 8px; background: #fff3e0; color: #d98a45; border: 2px dashed #ffb26b; border-radius: 999px; padding: 4px 14px; font-size: 13px; font-weight: 700; transform: rotate(1deg); }
+  .result-hero .title { margin-top: 10px; font-size: 14.5px; color: #8a7a5f; }
+  .kw { display: flex; justify-content: center; gap: 8px; margin: 16px 0 4px; }
+  .kw span { background: #fff; border: 2px solid #e2d3ae; border-radius: 10px; padding: 5px 14px; font-size: 13px; font-weight: 800; color: #5d4c33; transform: rotate(var(--r, 0deg)); }
+  .kw span:nth-child(2) { --r: 1.5deg; }
+  .kw span:nth-child(3) { --r: -1.5deg; }
+  .card { background: #fffdf7; border: 2px solid #efe3c8; border-radius: 18px; padding: 16px 18px; margin-top: 16px; }
+  .card h3 { font-size: 14px; color: #d98a45; margin-bottom: 8px; letter-spacing: 1px; }
+  .card h3::before { content: "・"; color: #b5a583; }
+  .card p, .card li { font-size: 14.5px; color: #5d4c33; }
+  .card ul { list-style: none; }
+  .card li { padding: 5px 0 5px 20px; position: relative; }
+  .card li::before { content: "☑"; position: absolute; left: 0; color: #7bc47f; font-size: 13px; }
+  .joke { background: #fff3e0; border-color: #ffd9a8; }
+  .joke h3 { color: #e0883a; }
+  .again { margin-top: 24px; }
+</style>
+</head>
+<body>
+<div class="tag">变体 3 · 手账涂鸦风</div>
+
+<!-- 首页 -->
+<div class="screen active" id="s-home">
+  <div class="hero">
+    <span class="sticker">🥾 溜达才是正经事</span>
+    <h1>徒步&amp;溜达风格测试</h1>
+    <p class="sub">用 3 到 5 分钟看看你的徒步路子像哪种精神状态</p>
+    <div class="desc">20 道题,测出你的娱乐向人格标签,适合自嘲、分享和朋友互测。</div>
+    <button class="btn" onclick="go('s-quiz')">开始测试</button>
+    <p class="foot">纯娱乐 · 不做心理诊断 · 可以截图分享</p>
+  </div>
+</div>
+
+<!-- 测试页 -->
+<div class="screen" id="s-quiz">
+  <div class="quiz-head">
+    <span class="num">第 <b>1</b> / 20 题</span>
+    <span class="sticker" style="transform: rotate(2deg);">慢慢选不着急</span>
+  </div>
+  <div class="track"><i></i></div>
+  <div class="q-card">
+    <p class="q">周末早晨计划徒步,拉开窗帘发现天色阴沉,你的第一反应是?</p>
+    <button class="opt" onclick="pick(this)"><span class="k">A</span>立刻查天气雷达图,确认路线能否走,必要时启用Plan B</button>
+    <button class="opt" onclick="pick(this)"><span class="k">B</span>关上窗帘继续睡,梦里什么天气都有</button>
+    <button class="opt" onclick="pick(this)"><span class="k">C</span>无所谓,阴天说不定更舒服,还能偶遇隐秘小店</button>
+    <button class="back" onclick="go('s-home')">← 回去改上一题</button>
+  </div>
+</div>
+
+<!-- 结果页 -->
+<div class="screen" id="s-result">
+  <div class="result-hero">
+    <img class="avatar" src="../../public/images/characters/TURBO.webp" alt="暴走风火轮">
+    <div class="code">TURBO</div>
+    <div class="name">暴走风火轮</div>
+    <span class="share">#油门焊死徒步人</span>
+    <p class="title">速度是信仰,终点是执念</p>
+    <div class="kw"><span>速度</span><span>目标</span><span>不回头</span></div>
+  </div>
+  <div class="card">
+    <h3>你的徒步人格</h3>
+    <p>能用速度解决的路线,绝不多停留一秒。耳机里是电子节拍,心里只有山顶的倒计时。</p>
+  </div>
+  <div class="card joke">
+    <h3>轻松吐槽</h3>
+    <p>和你徒步像参加越野赛,连路边的花都来不及看清,你就成背影了。</p>
+  </div>
+  <div class="card">
+    <h3>你可能会这样</h3>
+    <ul>
+      <li>在平路不自觉开始竞走,看见前面有人就想超。</li>
+      <li>同伴停下来拍照,你在旁边内心疯狂抖腿。</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>行动建议</h3>
+    <ul>
+      <li>偶尔调成0.5倍速,野草莓可能就在转角。</li>
+      <li>设定"强制休息点",用一杯咖啡的时间看看山。</li>
+    </ul>
+  </div>
+  <button class="btn peach again" onclick="go('s-home')">↻ 重新测试</button>
+</div>
+
+<script>
+function go(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+function pick(el) {
+  el.parentElement.querySelectorAll('.opt').forEach(o => o.classList.remove('picked'));
+  el.classList.add('picked');
+  setTimeout(() => go('s-result'), 350);
+}
+</script>
+</body>
+</html>

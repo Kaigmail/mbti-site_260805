@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>变体 2 · 极简杂志风 — 徒步&溜达风格测试</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #ffffff; color: #111111; line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .tag {
+    position: fixed; top: 10px; left: 50%; transform: translateX(-50%);
+    background: #111; color: #fff; font-size: 12px; letter-spacing: 2px;
+    padding: 5px 16px; border-radius: 2px; z-index: 99;
+  }
+  .screen { display: none; max-width: 420px; margin: 0 auto; padding: 72px 24px 48px; }
+  .screen.active { display: block; }
+
+  /* 首页 — 编辑排版 */
+  .hero .kicker { font-size: 12px; letter-spacing: 4px; color: #0a7a5a; text-transform: uppercase; }
+  .hero h1 { font-size: 38px; font-weight: 300; line-height: 1.15; letter-spacing: 2px; margin-top: 18px; }
+  .hero h1 strong { font-weight: 700; }
+  .hero .rule { width: 44px; height: 3px; background: #0a7a5a; margin: 26px 0 20px; }
+  .hero .sub { font-size: 15px; color: #666; max-width: 300px; }
+  .hero .desc { margin-top: 34px; padding-top: 18px; border-top: 1px solid #e5e5e5; font-size: 14px; color: #888; }
+  .btn {
+    display: block; width: 100%; padding: 15px 0; border: 1.5px solid #111; cursor: pointer;
+    background: #111; color: #fff; font-size: 15px; letter-spacing: 8px; text-indent: 8px;
+    font-family: inherit; margin-top: 28px; border-radius: 2px;
+    transition: background .15s ease, color .15s ease;
+  }
+  .btn:active { background: #fff; color: #111; }
+  .btn.outline { background: #fff; color: #111; margin-top: 10px; letter-spacing: 4px; text-indent: 0; }
+  .btn.outline:active { background: #111; color: #fff; }
+
+  /* 测试页 */
+  .quiz-head { display: flex; justify-content: space-between; border-bottom: 1px solid #e5e5e5; padding-bottom: 12px; margin-bottom: 8px; }
+  .quiz-head .no { font-size: 26px; font-weight: 700; }
+  .quiz-head .no em { font-style: normal; font-size: 13px; color: #aaa; font-weight: 400; }
+  .quiz-head .hint { font-size: 12px; color: #bbb; letter-spacing: 2px; align-self: flex-end; }
+  .track { height: 2px; background: #eee; margin: 0 0 34px; }
+  .track i { display: block; height: 100%; width: 5%; background: #0a7a5a; }
+  .q-card .q { font-size: 22px; font-weight: 600; line-height: 1.5; letter-spacing: .5px; }
+  .opt {
+    display: block; width: 100%; margin-top: 16px; padding: 17px 4px; text-align: left;
+    background: none; border: none; border-bottom: 1px solid #eee; cursor: pointer;
+    font-size: 15px; color: #333; font-family: inherit; transition: color .15s, padding-left .15s;
+  }
+  .opt .k { display: inline-block; width: 24px; color: #bbb; font-size: 13px; letter-spacing: 1px; }
+  .opt:active, .opt.picked { color: #0a7a5a; padding-left: 8px; }
+  .opt.picked .k { color: #0a7a5a; font-weight: 700; }
+  .back { margin-top: 26px; background: none; border: none; color: #aaa; font-size: 13px; cursor: pointer; letter-spacing: 2px; }
+
+  /* 结果页 */
+  .result-hero { text-align: center; padding: 10px 0 6px; }
+  .result-hero .avatar { width: 88px; height: 118px; object-fit: cover; border-radius: 2px; filter: grayscale(100%) contrast(1.05); margin-bottom: 18px; }
+  .result-hero .code { font-size: 46px; font-weight: 200; letter-spacing: 8px; line-height: 1; }
+  .result-hero .name { font-size: 20px; font-weight: 600; margin-top: 8px; letter-spacing: 4px; }
+  .result-hero .title { margin-top: 10px; font-size: 14px; color: #888; }
+  .result-hero .share { display: inline-block; margin-top: 14px; font-size: 12px; letter-spacing: 1px; color: #0a7a5a; border: 1px solid #0a7a5a33; background: #0a7a5a0d; padding: 4px 12px; }
+  .kw { display: flex; justify-content: center; gap: 10px; margin: 20px 0 2px; }
+  .kw span { font-size: 12px; letter-spacing: 2px; color: #444; border-bottom: 1px solid #111; padding-bottom: 3px; }
+  .card { border-top: 1px solid #e5e5e5; padding: 18px 0 4px; margin-top: 14px; }
+  .card h3 { font-size: 11px; letter-spacing: 3px; color: #0a7a5a; text-transform: uppercase; margin-bottom: 10px; }
+  .card p, .card li { font-size: 15px; color: #333; }
+  .card ul { list-style: none; }
+  .card li { padding: 7px 0; border-bottom: 1px dashed #f0f0f0; }
+  .card li:last-child { border-bottom: none; }
+  .again { margin-top: 34px; }
+</style>
+</head>
+<body>
+<div class="tag">变体 2 · 极简杂志风</div>
+
+<!-- 首页 -->
+<div class="screen active" id="s-home">
+  <div class="hero">
+    <p class="kicker">Hiking Style Test</p>
+    <h1>徒步<strong>&amp;</strong>溜达<br>风格测试</h1>
+    <div class="rule"></div>
+    <p class="sub">用 3 到 5 分钟看看你的徒步路子像哪种精神状态</p>
+    <p class="desc">20 道题 · 娱乐向人格标签 · 适合自嘲、分享和朋友互测。非专业心理诊断。</p>
+    <button class="btn" onclick="go('s-quiz')">开始测试</button>
+    <button class="btn outline" onclick="go('s-result')">先看结果页长啥样</button>
+  </div>
+</div>
+
+<!-- 测试页 -->
+<div class="screen" id="s-quiz">
+  <div class="quiz-head">
+    <span class="no">01 <em>/ 20</em></span>
+    <span class="hint">READ SLOWLY</span>
+  </div>
+  <div class="track"><i></i></div>
+  <div class="q-card">
+    <p class="q">周末早晨计划徒步,拉开窗帘发现天色阴沉,你的第一反应是?</p>
+    <button class="opt" onclick="pick(this)"><span class="k">A</span>立刻查天气雷达图,确认路线能否走,必要时启用Plan B</button>
+    <button class="opt" onclick="pick(this)"><span class="k">B</span>关上窗帘继续睡,梦里什么天气都有</button>
+    <button class="opt" onclick="pick(this)"><span class="k">C</span>无所谓,阴天说不定更舒服,还能偶遇隐秘小店</button>
+    <button class="back" onclick="go('s-home')">← 返回上一题</button>
+  </div>
+</div>
+
+<!-- 结果页 -->
+<div class="screen" id="s-result">
+  <div class="result-hero">
+    <img class="avatar" src="../../public/images/characters/TURBO.webp" alt="暴走风火轮">
+    <div class="code">TURBO</div>
+    <div class="name">暴走风火轮</div>
+    <p class="title">速度是信仰,终点是执念</p>
+    <span class="share">#油门焊死徒步人</span>
+    <div class="kw"><span>速度</span><span>目标</span><span>不回头</span></div>
+  </div>
+  <div class="card">
+    <h3>徒步人格</h3>
+    <p>能用速度解决的路线,绝不多停留一秒。耳机里是电子节拍,心里只有山顶的倒计时。</p>
+  </div>
+  <div class="card">
+    <h3>轻松吐槽</h3>
+    <p>和你徒步像参加越野赛,连路边的花都来不及看清,你就成背影了。</p>
+  </div>
+  <div class="card">
+    <h3>你可能会这样</h3>
+    <ul>
+      <li>在平路不自觉开始竞走,看见前面有人就想超。</li>
+      <li>同伴停下来拍照,你在旁边内心疯狂抖腿。</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>行动建议</h3>
+    <ul>
+      <li>偶尔调成0.5倍速,野草莓可能就在转角。</li>
+      <li>设定"强制休息点",用一杯咖啡的时间看看山。</li>
+    </ul>
+  </div>
+  <button class="btn again" onclick="go('s-home')">重新测试</button>
+</div>
+
+<script>
+function go(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+function pick(el) {
+  el.parentElement.querySelectorAll('.opt').forEach(o => o.classList.remove('picked'));
+  el.classList.add('picked');
+  setTimeout(() => go('s-result'), 350);
+}
+</script>
+</body>
+</html>
