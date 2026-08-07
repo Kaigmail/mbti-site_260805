@@ -1,3 +1,5 @@
 node_modules/
 data/results.db
 *.log
+
+.codex_monitor.json

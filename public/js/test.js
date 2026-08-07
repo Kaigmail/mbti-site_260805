@@ -1,56 +1,35 @@
 'use strict';
-
 const STORAGE_KEY = 'mbti_result';
 const TOTAL = 20;
-
 let questions = [];
 let answers = new Array(TOTAL).fill(null);
 let current = 0;
 let submitting = false;
 let pendingAdvance = false;
-
 const page = document.getElementById('page');
-
-function showLoading() {
-  page.innerHTML = '';
-  const box = document.createElement('div');
-  box.className = 'card state-box';
-
-  const spinner = document.createElement('div');
-  spinner.className = 'spinner';
-  spinner.setAttribute('aria-hidden', 'true');
-
-  const title = document.createElement('p');
-  title.className = 'state-title';
-  title.textContent = '题目加载中…';
-
-  box.append(spinner, title);
-  page.appendChild(box);
+function showLoading(message) {
+  page.innerHTML = `
+    <div class="state-box">
+      <div class="spinner" aria-hidden="true"></div>
+      <p class="state-title">${message || '题目加载中…'}</p>
+    </div>
+  `;
 }
-
 function showError(title, desc, onRetry) {
-  page.innerHTML = '';
-  const box = document.createElement('div');
-  box.className = 'card state-box';
-
-  const heading = document.createElement('p');
-  heading.className = 'state-title';
-  heading.textContent = title;
-
-  const message = document.createElement('p');
-  message.className = 'state-desc';
-  message.textContent = desc;
-
-  const retry = document.createElement('button');
-  retry.className = 'btn btn-primary';
-  retry.type = 'button';
+  page.innerHTML = `
+    <div class="state-box">
+      <p class="state-title"></p>
+      <p class="state-desc"></p>
+      <button type="button" class="btn btn-green"></button>
+    </div>
+  `;
+  const box = page.firstElementChild;
+  box.querySelector('.state-title').textContent = title;
+  box.querySelector('.state-desc').textContent = desc;
+  const retry = box.querySelector('.btn');
   retry.textContent = '重试';
   retry.addEventListener('click', onRetry);
-
-  box.append(heading, message, retry);
-  page.appendChild(box);
 }
-
 async function loadQuestions() {
   showLoading();
   try {
@@ -69,109 +48,67 @@ async function loadQuestions() {
     showError('题目加载失败', '请检查网络后重试。', loadQuestions);
   }
 }
-
 function renderQuestion(index) {
   current = index;
   pendingAdvance = false;
-
   const question = questions[index];
-  page.innerHTML = '';
-
-  const head = document.createElement('div');
-  head.className = 'quiz-head';
-
-  const progressText = document.createElement('div');
-  progressText.className = 'quiz-progress-text';
-  const label = document.createElement('span');
-  const num = document.createElement('strong');
-  num.textContent = `第 ${index + 1} / ${TOTAL} 题`;
-  const remain = document.createElement('span');
-  remain.textContent = `还剩 ${TOTAL - index - 1} 题`;
-  label.appendChild(num);
-  progressText.append(label, remain);
-
-  const track = document.createElement('div');
-  track.className = 'progress-track';
-  track.setAttribute('role', 'progressbar');
-  track.setAttribute('aria-valuemin', '1');
-  track.setAttribute('aria-valuemax', String(TOTAL));
-  track.setAttribute('aria-valuenow', String(index + 1));
-  const fill = document.createElement('div');
-  fill.className = 'progress-fill';
-  fill.style.width = `${((index + 1) / TOTAL) * 100}%`;
-  track.appendChild(fill);
-
-  head.append(progressText, track);
-
-  const card = document.createElement('div');
-  card.className = 'card question-card question-wrap';
-
-  const questionText = document.createElement('p');
-  questionText.className = 'question-text';
+  const percent = ((index + 1) / TOTAL) * 100;
+  const selectedIndex = answers[index];
+  const optionsHtml = question.options
+    .map((option, i) => {
+      const label = option.label || String.fromCharCode(65 + i);
+      const picked = selectedIndex === i ? ' picked' : '';
+      return `
+        <button type="button" class="opt${picked}" data-index="${i}">
+          <span class="k">${label}</span>
+          <span class="t"></span>
+        </button>
+      `;
+    })
+    .join('');
+  page.innerHTML = `
+    <div class="quiz-head">
+      <span class="num">第 ${index + 1}/${TOTAL} 题</span>
+      <span class="total">🧭 读题慢一点,选走心的</span>
+    </div>
+    <div class="track" role="progressbar" aria-valuemin="1" aria-valuemax="${TOTAL}"
+         aria-valuenow="${index + 1}">
+      <i style="width: ${percent}%"></i>
+    </div>
+    <div class="q-card">
+      <p class="q"></p>
+      <div class="options">
+        ${optionsHtml}
+      </div>
+      <button type="button" class="back" ${index === 0 ? 'disabled' : ''}>← 上一题</button>
+    </div>
+  `;
+  const questionText = page.querySelector('.q');
   questionText.textContent = question.text;
-
-  const optionsBox = document.createElement('div');
-  optionsBox.className = 'options';
-
+  const textSpans = page.querySelectorAll('.opt .t');
   question.options.forEach((option, i) => {
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'option';
-    btn.dataset.index = String(i);
-
-    const labelChip = document.createElement('span');
-    labelChip.className = 'opt-label';
-    labelChip.textContent = option.label;
-
-    const text = document.createElement('span');
-    text.textContent = option.text;
-
-    btn.append(labelChip, text);
-    optionsBox.appendChild(btn);
+    textSpans[i].textContent = option.text;
   });
-
-  card.append(questionText, optionsBox);
-
-  const footer = document.createElement('div');
-  footer.className = 'quiz-footer';
-  const back = document.createElement('button');
-  back.type = 'button';
-  back.className = 'btn btn-ghost';
-  back.textContent = '上一题';
-  back.disabled = index === 0;
+  const back = page.querySelector('.back');
   back.addEventListener('click', () => {
     if (submitting || pendingAdvance || current === 0) {
       return;
     }
     renderQuestion(current - 1);
   });
-  footer.appendChild(back);
-
-  page.append(head, card, footer);
-
-  // Highlight the previously chosen option when revisiting a question.
-  const selectedIndex = answers[index];
-  if (selectedIndex !== null) {
-    const buttons = optionsBox.querySelectorAll('.option');
-    const chosen = buttons[selectedIndex];
-    if (chosen) {
-      chosen.classList.add('selected');
-    }
-  }
-
+  const optionsBox = page.querySelector('.options');
   optionsBox.addEventListener('click', (event) => {
     if (submitting || pendingAdvance) {
       return;
     }
-    const btn = event.target.closest('.option');
+    const btn = event.target.closest('.opt');
     if (!btn) {
       return;
     }
     const chosen = Number(btn.dataset.index);
     answers[current] = chosen;
-    btn.classList.add('selected');
+    btn.classList.add('picked');
     pendingAdvance = true;
-
     if (current < TOTAL - 1) {
       window.setTimeout(() => renderQuestion(current + 1), 180);
     } else {
@@ -179,25 +116,12 @@ function renderQuestion(index) {
     }
   });
 }
-
 async function submitAnswers() {
   if (submitting) {
     return;
   }
   submitting = true;
-
-  page.innerHTML = '';
-  const box = document.createElement('div');
-  box.className = 'card state-box';
-  const spinner = document.createElement('div');
-  spinner.className = 'spinner';
-  spinner.setAttribute('aria-hidden', 'true');
-  const title = document.createElement('p');
-  title.className = 'state-title';
-  title.textContent = '正在计算你的徒步人格…';
-  box.append(spinner, title);
-  page.appendChild(box);
-
+  showLoading('正在计算你的徒步人格…');
   try {
     const resultRes = await fetch('/api/result', {
       method: 'POST',
@@ -208,9 +132,6 @@ async function submitAnswers() {
       throw new Error(`HTTP ${resultRes.status}`);
     }
     const result = await resultRes.json();
-
-    // Persisting the result is best-effort; a failure must not block the
-    // result page from showing the already-computed label.
     try {
       await fetch('/api/save', {
         method: 'POST',
@@ -223,7 +144,6 @@ async function submitAnswers() {
     } catch (saveErr) {
       console.warn('Failed to save result:', saveErr);
     }
-
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(result));
     window.location.href = '/result.html';
   } catch (err) {
@@ -235,5 +155,4 @@ async function submitAnswers() {
     });
   }
 }
-
 loadQuestions();
