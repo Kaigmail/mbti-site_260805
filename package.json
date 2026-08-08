@@ -16,8 +16,5 @@
   "engines": {
     "node": ">=18"
   },
-  "license": "UNLICENSED",
-  "allowScripts": {
-    "better-sqlite3@11.10.0": true
-  }
+  "license": "UNLICENSED"
 }
