@@ -89,3 +89,10 @@ initDB();
 app.listen(PORT, () => {
   console.log(`MBTI site server listening on http://localhost:${PORT}`);
 });
+
+// 扣子 FaaS 兼容:平台未注入 PORT 时,额外监听 5000(平台默认探测端口)
+if (!process.env.PORT) {
+  app.listen(5000, () => {
+    console.log('MBTI site server also listening on http://localhost:5000 (coze fallback)');
+  });
+}

@@ -19,8 +19,5 @@
   "license": "UNLICENSED",
   "allowScripts": {
     "better-sqlite3@11.10.0": true
-  },
-  "optionalDependencies": {
-    "better-sqlite3": "^11.7.0"
   }
 }

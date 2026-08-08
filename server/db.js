@@ -2,7 +2,9 @@
 
 const path = require('path');
 
-const DB_TYPE = process.env.DB_TYPE || 'sqlite';
+// 未显式指定时:配了 Supabase 就用 Supabase,否则本地 SQLite
+const DB_TYPE =
+  process.env.DB_TYPE || (process.env.SUPABASE_URL ? 'supabase' : 'sqlite');
 
 let db = null;
 let supabase = null;
@@ -45,7 +47,19 @@ function initDB() {
     return supabase;
   }
 
-  const Database = require('better-sqlite3');
+  // 本地 SQLite 兜底(开发用)。云端没装 better-sqlite3 时给出清晰指引。
+  let Database;
+  try {
+    Database = require('better-sqlite3');
+  } catch (err) {
+    console.error(
+      '[db] better-sqlite3 不可用(本地开发依赖)。生产环境请配置环境变量:',
+      'DB_TYPE=supabase + SUPABASE_URL + SUPABASE_PUBLISHABLE_KEY'
+    );
+    throw new Error(
+      'better-sqlite3 unavailable; 生产部署请配置 DB_TYPE=supabase 环境变量'
+    );
+  }
   const dbPath = path.join(__dirname, '..', 'data', 'results.db');
   db = new Database(dbPath);
   db.prepare(
