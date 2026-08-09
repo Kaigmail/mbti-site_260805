@@ -37,3 +37,8 @@
 - Codex:任务卡#4 统计页(stats.html+stats.js+首页入口+CSS条形图),自测 20 断言全过
 - 踩坑:新版 Supabase 强制 RLS 不允许 disable,需建 anon 策略;node 后台启动需 pty=true(非pty静默exit1)
 - 验证:保存入库(id=2)/stats total=2/浏览器全流程 toast"测试结果已保存"/统计页渲染 100%
+
+## 2026-08-09 线上部署成功 + 验收
+- Kai:扣子手动配环境变量(DB_TYPE/SUPABASE_URL/SUPABASE_PUBLISHABLE_KEY)后重新部署
+- 验证:线上 https://y6ndnkcbq4.coze.site 首页/答题/结果页正常;保存成功(toast"测试结果已保存");统计接口正常(total=4: TURBO3/RAW1);清理 PROBE 测试数据
+- 教训:扣子环境变量不会自动配,必须手动新建变量;改环境变量后必须重新部署
