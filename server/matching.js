@@ -33,13 +33,16 @@ const validPairs = pairsData.pairs.filter(
  * For every pair the user wins, the winning trait name is collected. Each label
  * scores +1 per trait in its `traits` list that matches one of the user's
  * winning traits. The label with the highest hit count wins; ties resolve to
- * the earlier label in labels.json; a 0-hit fallback also returns the first
- * label. The returned object is the full label entry plus `hit_count`.
+ * a deterministic pick based on `seed` (answer-based hash) instead of the
+ * list order — this removes the "first label wins" bias (TURBO advantage).
+ * A 0-hit fallback also uses the seed. The returned object is the full label
+ * entry plus `hit_count`.
  *
  * @param {Object<string, 'a'|'b'>} tendencies - keyed by the pair's a-side name.
+ * @param {string|number} [seed] - deterministic tie-break key (e.g. answers joined).
  * @returns {Object} full matched label entry + hit_count.
  */
-function match(tendencies) {
+function match(tendencies, seed) {
   const winningTraits = new Set();
   for (const pair of validPairs) {
     const side = tendencies[pair.a];
@@ -51,9 +54,9 @@ function match(tendencies) {
     // undefined (tie) → counts for nobody
   }
 
-  let bestLabel = labelsData.labels[0];
   let bestScore = -1;
   let bestHits = -1;
+  const candidates = [];
 
   for (const label of labelsData.labels) {
     let hits = 0;
@@ -69,12 +72,34 @@ function match(tendencies) {
     const score = hits + hits / label.traits.length;
     if (score > bestScore) {
       bestScore = score;
-      bestLabel = label;
       bestHits = hits;
+      candidates.length = 0;
+      candidates.push(label);
+    } else if (score === bestScore) {
+      candidates.push(label);
     }
   }
 
+  // Tie-break: deterministic pick from all candidates using the seed.
+  const bestLabel =
+    candidates.length === 1
+      ? candidates[0]
+      : pickBySeed(candidates, seed);
+
   return { ...bestLabel, hit_count: bestHits };
+}
+
+/** Deterministic hash-based pick: same seed → same label, no list-order bias. */
+function pickBySeed(candidates, seed) {
+  if (!seed || candidates.length <= 1) {
+    return candidates[0];
+  }
+  let h = 0;
+  const s = String(seed);
+  for (let i = 0; i < s.length; i++) {
+    h = (h * 31 + s.charCodeAt(i)) >>> 0;
+  }
+  return candidates[h % candidates.length];
 }
 
 module.exports = { match };

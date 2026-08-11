@@ -45,7 +45,7 @@ app.post('/api/result', (req, res) => {
 
   try {
     const { dimension_scores, tendencies, strict_tendencies } = score(answers);
-    const matched = match(strict_tendencies);
+    const matched = match(strict_tendencies, answers.join(''));
     res.json({ ...matched, dimension_scores, tendencies });
   } catch (err) {
     res.status(500).json({ ok: false, error: err.message });
